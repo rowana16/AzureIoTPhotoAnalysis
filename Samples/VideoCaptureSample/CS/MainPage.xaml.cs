@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -138,6 +139,28 @@ namespace VideoCaptureSample
         private async void stopCapture(object sender, RoutedEventArgs e)
         {
             await StopMediaCaptureSession();
+        }
+
+        private async void previewImage(object sender, RoutedEventArgs e)
+        {
+            await mediaCapture.StartPreviewAsync();
+        }
+        private async void takePicture(object sender, RoutedEventArgs e)
+        {
+            var imageProperties = ImageEncodingProperties.CreateJpeg();
+            imageProperties.Height = 480;
+            imageProperties.Width = 640;            
+                        
+            //StorageLibrary libPhoto = await StorageLibrary.GetLibraryAsync(KnownLibraryId.Pictures);            
+            //StorageFile storefile = await libPhoto.SaveFolder.CreateFileAsync("TestSave.jpg", CreationCollisionOption.ReplaceExisting);
+
+            StorageFile storageFile = await KnownFolders.PicturesLibrary.CreateFileAsync("TestSave.jpg", CreationCollisionOption.GenerateUniqueName);
+
+            await mediaCapture.CapturePhotoToStorageFileAsync(imageProperties, storageFile);
+        }
+        private async void sendPicture(object sender, RoutedEventArgs e)
+        {
+            await StartMediaCaptureSession();
         }
 
         private async void playVideo(object sender, RoutedEventArgs e)
